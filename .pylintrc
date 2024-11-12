@@ -1,0 +1,10 @@
+[FORMAT]
+# Regular expression matching correct constant names
+# const-rgx=([a-z_][a-z0-9_]*)$
+
+[MESSAGES CONTROL]
+# mayusculas para constantes
+# disable=C0103   
+# doc string
+disable=C0116
+
