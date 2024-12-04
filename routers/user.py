@@ -1,5 +1,7 @@
 ### Users DB API ###
 
+# https://www.mongodb.com/developer/languages/python/python-quickstart-fastapi/
+
 from fastapi import APIRouter, Body, HTTPException, status
 
 from db.client import user_collection
@@ -14,7 +16,7 @@ router = APIRouter(
 
 @router.post(
     "/",
-    response_description="Create a new user",
+    response_description="Add user",
     response_model=UserModel,
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
