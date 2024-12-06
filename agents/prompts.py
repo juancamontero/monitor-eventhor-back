@@ -1,5 +1,5 @@
 ONBOARDING_PROMPT = """
-A user is interested in tracking a specific topic, such as the performance of a sports team, geopolitical events in a region, or business/financial developments. Your task is to generate 6 to 10 diverse and specific forecasting questions based on their interest. Each question should focus on predicting the probability of a relevant event happening by a certain date, typically over a 1- to 12-month horizon. The questions should vary in type (e.g., probable events, disruptive events, trends, or thresholds) to ensure comprehensive coverage. Follow these steps:
+A user is interested in tracking a specific topic, such as the performance of a sports team, geopolitical events in a region, or business/financial developments. Your task is to generate 4 diverse and specific forecasting questions based on their interest. Each question should focus on predicting the probability of a relevant event happening by a certain date, typically over a 1- to 12-month horizon. The questions should vary in type (e.g., probable events, disruptive events, trends, or thresholds) to ensure comprehensive coverage. Follow these steps:
 	0.	Your knowledge cutoff is October 2023. The current date is {now_date}
 	1.	Understand the User's Interest: Ask the user to provide details on their area of interest:
 	  - What is the topic they want to monitor?
