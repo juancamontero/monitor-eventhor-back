@@ -1,16 +1,16 @@
-### Users DB API ###
+###OLD -  Users DB API ###
 
 # https://www.mongodb.com/developer/languages/python/python-quickstart-fastapi/
 
 from fastapi import APIRouter, Body, HTTPException, status
 
-from db.client import user_collection
+from db.client import users_collection
 from db.models.user import UserModel
 
 router = APIRouter(
     prefix="/users",
     tags=["user"],
-    responses={status.HTTP_404_NOT_FOUND: {"message": "Not founder ni rent"}},
+    responses={status.HTTP_404_NOT_FOUND: {"message": "Not found!"}},
 )
 
 
@@ -22,13 +22,13 @@ router = APIRouter(
     response_model_by_alias=False,
 )
 async def create_user(user: UserModel = Body(...)):
-    new_user = await user_collection.insert_one(
+    new_user = await users_collection.insert_one(
         user.model_dump(by_alias=True, exclude={"id"})
     )
-    created_user = await user_collection.find_one({"_id": new_user.inserted_id})
+    created_user = await users_collection.find_one({"_id": new_user.inserted_id})
     return created_user
 
 
 @router.get("/test/")
 def test():
-    return {"message": "Hello Testing world"}
+    return {"message": "Hello! You are in the users router"}

@@ -15,4 +15,6 @@ client: AsyncIOMotorClient = AsyncIOMotorClient(os.environ.get("DATA_BASE_URL_AT
 #? client.get_io_loop = asyncio.get_running_loop
 
 db = client.eventhor
-user_collection = db.get_collection("users")
+users_collection = db.get_collection("User")
+topics_collection = db.get_collection("Topic")
+questions_collection = db.get_collection("Question")

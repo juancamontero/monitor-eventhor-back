@@ -17,6 +17,8 @@ from tqdm import tqdm
 
 
 from agents.onboarding_agent.OnboardingChat import OnboardingAgent
+from utils.user_utils import get_active_users_onboarded
+from db.models.user import UserModel
 
 # Define the structure of the input data using Pydantic models for data validation
 class OnboardingData(BaseModel):
@@ -45,3 +47,13 @@ async def onboarding_endpoint(data: OnboardingData):
     response = await onboarding_agent.completions(data.messages)
 
     return StreamingResponse(response, media_type="application/json")
+
+@router.get("/active-users", response_model=List[UserModel])
+async def get_active_onboarded_users():
+    """
+    Get a list of all active users who have completed onboarding.
+    
+    Returns:
+        List[UserModel]: List of active users who have completed onboarding
+    """
+    return await get_active_users_onboarded()

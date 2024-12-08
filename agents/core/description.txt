@@ -1,0 +1,87 @@
+Create an CoreAgent.py that must:
+
+Run a process every hour, this process must:
+- Searches the database for users who are active and have completed onboarding in the 'User' table
+- For each user a parallel process is generated (Example: 10 users -> 10 parallel processes):
+    The following steps are executed sequentially for each user:
+        - From the 'Question' table in the database, downloads questions where the current date is greater than 'nextResponseDate' or where 'nextResponseDate' is null or the field doesn't exist. 
+        - Prints the questions to console using this format: (Question: 'question_text', Event-Type: 'event_type', User-Id: 'user_id', User-Name: 'user_name')
+        - In the 'Question' table, update or create the 'nextResponseDate' field with the sum of the current date and the 'search_interval' field, which has the value in hours. 
+
+Steps:
+0. install all the dependencies you will need and update the requirements.txt file
+1. create separate functions for the data base calls and logic, save them into the 'utils' folder in 'core_utils.py' file
+2. Create the CoreAgent.py file in the 'agents/core_agent' folder
+3. To implement the scheduler use FastAPI with Background Tasks and AsyncIOScheduler
+4. Make the necessary changes to the 'api.py' file to implement the scheduler
+5. To test it make the timeframe to be 2 minutes, make a comment in the code where to change it to be 1 hour@api.py 
+
+
+
+
+
+
+## Description
+Este proceso se ejecuta cada hora.
+ 
+- Busca en la base de datos los usuarios que están activos y que hicieron el onboarding
+- Para cada usuario se genera un proceso en paralelo:
+    Los siguientes pasos se ejecutan de manera secuencial:
+        - De la tabla 'Question' en la base de datos descarga las preguntas dónde la fecha actual es mayor a 'nextResponseDate' o que 'nextResponseDate' sea nulo o no que no exista el campo
+        - Imprime en consola las preguntas, usa este formato: (Question: 'question_text', Event-Type: 'event_type')
+        - En la tabla 'Question' actualiza  el campo 'nextResponseDate' con la suma de la fecha actual y el campo 'search_interval', campo que tiene el valor en horas
+        - Llama al report agent, crea el reporte diario del interés del usuario y guarda el reporte en la base de datos en la tabla 'Report' con el valor en el campo 'type' = 'daily'
+        - De la tabla 'Topic' en la base de datos descarga los registros dónde la fecha actual es mayor a 'nextReportDate' o que 'nextReportDate' sea nulo o no exista
+        - Llama al report agent, crea el reporte semanal del interés del usuario y guarda el reporte en la base de datos en la tabla 'Report' con el valor en el campo 'type' = 'weekly'
+        - En la tabla 'Topic' actualiza el campo 'nextReportDate' con la suma de la fecha actual y el campo 'report_interval', campo que tiene el valor en horas
+
+
+
+Description fase 1
+Este proceso se ejecuta cada hora.
+ 
+- Busca en la base de datos los usuarios que están activos y que hicieron el onboarding en la tabla 'User'
+- Para cada usuario se genera un proceso en paralelo:
+    Los siguientes pasos se ejecutan de manera secuencial:
+        - De la tabla 'Question' en la base de datos descarga las preguntas dónde la fecha actual es mayor a 'nextResponseDate' o que 'nextResponseDate' sea nulo o no que no exista el campo
+        - Imprime en consola las preguntas, usa este formato: (Question: 'question_text', Event-Type: 'event_type')
+        - En la tabla 'Question' actualiza  el campo 'nextResponseDate' con la suma de la fecha actual y el campo 'search_interval', campo que tiene el valor en horas
+
+This process runs every hour.
+
+- Searches the database for users who are active and have completed onboarding in the 'User' table
+- For each user, a parallel process is generated:
+    The following steps are executed sequentially:
+        - From the 'Question' table in the database, downloads questions where the current date is greater than 'nextResponseDate' or where 'nextResponseDate' is null or the field doesn't exist
+        - Prints the questions to console using this format: (Question: 'question_text', Event-Type: 'event_type', User-Id: 'user_id', User-Name: 'user_name')
+        - In the 'Question' table, updates the 'nextResponseDate' field with the sum of the current date and the 'search_interval' field, which has the value in hours
+
+
+Create an CoreAgent.py that must:
+
+Run a process every hour, this process must:
+- Searches the database for users who are active and have completed onboarding in the 'User' table
+- For each user a parallel process is generated:
+    The following steps are executed sequentially for each user:
+        - From the 'Question' table in the database, downloads questions where the current date is greater than 'nextResponseDate' or where 'nextResponseDate' is null or the field doesn't exist
+        - Prints the questions to console using this format: (Question: 'question_text', Event-Type: 'event_type', User-Id: 'user_id', User-Name: 'user_name')
+        - In the 'Question' table, updates the 'nextResponseDate' field with the sum of the current date and the 'search_interval' field, which has the value in hours
+   
+
+Rules:
+- to implement the scheduler use FastAPI with Background Tasks and AsyncIOScheduler
+- create separate functions for the data base calls and logic, save them into the 'utils' folder in one of the files available, or creat a new on if you think is better
+- make the necessary changes to the 'api.py' file to implement the scheduler
+
+TODO:
+   - Con los 4 resultados genera un resumen para cada uno, quedan 4 resumenes que se guardan en un vector store
+    - Con los 4 resultados genera un reporte (**reporte diario**)que se guarda en un vector store que debe contener:
+        - Estado actual general del interés que dio el usuario
+        - Resumen de las preguntas y las 4 probabilidades a cada una
+        - Nuevo actor clave o noticia clave
+    - Revisa si hay un cambio clave (noticia, nuevo actor) y de ser necesario genera un reporte / alarma
+- con los 7 **reportes diarios** genera un **reporte semanal** que debe contener:
+    - Estado actual general del interés que dio el usuario
+    - Resumen de las preguntas y las 4 probabilidades a cada una
+    - Nuevo actor clave o noticia clave
+    - Resumen de lo destacado de la semana

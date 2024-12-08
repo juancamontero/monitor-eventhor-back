@@ -1,42 +1,106 @@
-# Clase en vídeo: https://youtu.be/_y9qQZXE24A?t=20480
+from datetime import datetime
+from typing import Optional, List
+from enum import Enum
+from pydantic import BaseModel, Field, EmailStr
+from bson import ObjectId
 
-### User model ###
+class PyObjectId(ObjectId):
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
 
-from typing import Optional, List, Annotated
-from pydantic import BaseModel, BeforeValidator, Field, EmailStr
+    @classmethod
+    def validate(cls, v, handler):
+        if not ObjectId.is_valid(v):
+            raise ValueError("Invalid ObjectId")
+        return ObjectId(v)
 
-# Represents an ObjectId field in the database.
-# It will be represented as a `str` on the model so that it can be serialized to JSON.
-PyObjectId = Annotated[str, BeforeValidator(str)]
+    @classmethod
+    def __get_pydantic_json_schema__(cls, field_schema, field_model):
+        field_schema.update(type="string")
+        return field_schema
 
+class UserRole(str, Enum):
+    SUPER = "super"
+    ADMIN = "admin"
+    USER = "user"
 
 class UserModel(BaseModel):
-    """
-    Basis user information to handle auth and payments / state
-    """
-
-    # The primary key for the StudentModel, stored as a `str` on the instance.
-    # This will be aliased to `_id` when sent to MongoDB,
-    # but provided as `id` in the API requests and responses.
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    username: str
-    name: str = Field(...)
-    email: EmailStr = Field(...)
-
-
-class UpdateUserModel(BaseModel):
-    """
-    A set of optional updates to be made to a document in the database.
-    """
-
-    username: Optional[str] = None
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     name: Optional[str] = None
     email: Optional[EmailStr] = None
+    password: Optional[str] = None
+    emailVerified: Optional[datetime] = None
+    isActive: bool = False
+    role: List[UserRole] = [UserRole.USER]
+    image: Optional[str] = None
+    hasCompletedOnboarding: bool = False
+    firstReporgenerated: bool = False
+    availableForecasts: Optional[int] = 10
+    createdAt: datetime = Field(default_factory=datetime.now)
+    updatedAt: datetime = Field(default_factory=datetime.now)
 
+    class Config:
+        json_encoders = {ObjectId: str}
+        populate_by_name = True
+        arbitrary_types_allowed = True
 
-class UserCollection(BaseModel):
-    """
-    A container holding a list of `StudentModel` instances.
-    This exists because providing a top-level array in a JSON response can be a [vulnerability](https://haacked.com/archive/2009/06/25/json-hijacking.aspx/)
-    """
-    users: List[UserModel]
+class Account(BaseModel):
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    userId: str
+    type: str
+    provider: str
+    providerAccountId: str
+    refresh_token: Optional[str] = None
+    access_token: Optional[str] = None
+    expires_at: Optional[int] = None
+    token_type: Optional[str] = None
+    scope: Optional[str] = None
+    id_token: Optional[str] = None
+    session_state: Optional[str] = None
+    createdAt: datetime = Field(default_factory=datetime.now)
+    updatedAt: datetime = Field(default_factory=datetime.now)
+
+    class Config:
+        json_encoders = {ObjectId: str}
+        populate_by_name = True
+        arbitrary_types_allowed = True
+
+class Session(BaseModel):
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    sessionToken: str
+    userId: str
+    expires: datetime
+    createdAt: datetime = Field(default_factory=datetime.now)
+    updatedAt: datetime = Field(default_factory=datetime.now)
+
+    class Config:
+        json_encoders = {ObjectId: str}
+        populate_by_name = True
+        arbitrary_types_allowed = True
+
+class VerificationToken(BaseModel):
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    identifier: str
+    token: str
+    expires: datetime
+
+    class Config:
+        json_encoders = {ObjectId: str}
+        populate_by_name = True
+        arbitrary_types_allowed = True
+
+class Authenticator(BaseModel):
+    credentialID: str = Field(..., alias="_id")
+    userId: str
+    providerAccountId: str
+    credentialPublicKey: str
+    counter: int
+    credentialDeviceType: str
+    credentialBackedUp: bool
+    transports: Optional[str] = None
+
+    class Config:
+        json_encoders = {ObjectId: str}
+        populate_by_name = True
+        arbitrary_types_allowed = True 
